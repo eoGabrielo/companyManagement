@@ -113,21 +113,29 @@ function ProductList() {
 
   // Função para deletar
   const startDelete = async (produto) => {
-    const idItem = produto._id ?? produto.id;
-    try {
-      const res = await fetch(`http://localhost:3000/produtos/${idItem}`, {
-        method: 'DELETE',
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.message || `Erro ao deletar: ${res.status}`);
-      }
-      // se deletou com sucesso, recarrega lista
-      await fetchProdutos();
-    } catch (err) {
-      console.log("Erro deletar produto:", err);
+  const idItem = produto._id ?? produto.id;
+
+  try {
+    const res = await fetch(`http://localhost:3000/produtos/${idItem}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.message || `Erro ao deletar: ${res.status}`);
     }
-  };
+
+    // Produto deletado com sucesso, recarrega a lista
+    await fetchProdutos();
+  } catch (err) {
+    console.error("Erro ao deletar produto:", err.message);
+  }
+};
+
 
   function cancelEditing() {
     setEditingId(null);

@@ -19,8 +19,16 @@ export default function Login() {
 
       if (res.ok) {
         const data = await res.json();
+
+        // ✅ Salvando o token no localStorage
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+          console.log('Token salvo com sucesso!');
+        }
+
         console.log('Login bem-sucedido:', data);
-        // Aqui você pode redirecionar ou salvar o token, etc.
+
+        // Redirecionar, mostrar mensagem, etc...
       } else {
         const error = await res.text();
         console.error('Erro ao fazer login:', error);

@@ -48,7 +48,7 @@ export const loginUser = async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    res.json({ PRECISASERESCONDIDO: token });
+    res.json({ token });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Erro no login" });

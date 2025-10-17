@@ -1,10 +1,8 @@
 import mongoose from "mongoose";
 
-const MONGO_URI = "mongodb+srv://gabrielo:gabrielo@cluster0estoqueempresar.ijrpzce.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0EstoqueEmpresaR";
-
 const connectDB = async () => {
   try {
-    await mongoose.connect(MONGO_URI);
+    await mongoose.connect(process.env.MONGO_URI);  // pegue direto aqui!
     console.log("Conectado ao MongoDB com sucesso!");
   } catch (error) {
     console.error("Erro ao conectar ao MongoDB:", error);

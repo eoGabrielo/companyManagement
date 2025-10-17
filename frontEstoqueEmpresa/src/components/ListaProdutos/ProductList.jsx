@@ -105,6 +105,11 @@ function ProductList() {
     setCodigo((produto.codigo ?? '').toString().toUpperCase());
   }
 
+  function startDeleteing(produto) {
+    console.log(produto._id || produto.id)
+    //LOGICA DE DELETA PRODUTO AQUI
+  }
+
   // Limpa o formulário e cancela a edição
   function cancelEditing() {
     setEditingId(null);
@@ -269,8 +274,16 @@ function ProductList() {
               <div style={{ position: 'absolute', right: 8, bottom: 8 }}>
                 <button
                   type="button"
+                  onClick={() => startDeleteing(produto)}
+                  className={styles.editButton}
+                >
+                  EXCLUIR
+                </button>
+                <button
+                  type="button"
                   onClick={() => startEditing(produto)}
                   className={styles.editButton}
+                  style={{ marginLeft: 8, marginBottom: 8}}
                 >
                   EDITAR
                 </button>

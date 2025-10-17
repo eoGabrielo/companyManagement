@@ -155,7 +155,6 @@
 
 /* Botão de edição usado dentro dos cards */
 .editButton {
-  margin: 0 46px 16px 0;
   padding: 8px 12px;
   background: linear-gradient(90deg, #61dafb, #21a1f1);
   color: #0b1220;

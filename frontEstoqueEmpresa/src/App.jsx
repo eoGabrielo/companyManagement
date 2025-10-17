@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ProductList from './components/ListaProdutos/ProductList';
 import Home from './components/Home/Home';
+import Login from './Login/Login';
 
 function App() {
   return (
@@ -8,6 +9,7 @@ function App() {
       <Routes>
         <Route path="/estoque" element={<ProductList />} />
         <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
 
         <Route path="*" element={<h1>404 - Página não encontrada</h1>} />
       </Routes>

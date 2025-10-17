@@ -10,7 +10,9 @@ function Header() {
         <a href="/estoque" className={styles.link}>Estoque</a>
         <a href="/nota" className={styles.link}>Nota</a>
       </nav>
-      <button className={styles.button}>Entrar</button>
+      <button className={styles.button}>
+        <a href="/login">Entrar</a>
+      </button>
     </header>
   );
 }

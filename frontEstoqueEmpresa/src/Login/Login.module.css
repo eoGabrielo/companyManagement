@@ -1,0 +1,96 @@
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 16px;
+  min-height: calc(100vh - 80px);
+  background: #0f2027;
+}
+
+.card {
+  width: 100%;
+  max-width: 420px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(46, 61, 73, 0.12);
+  padding: 28px;
+  border: 1px solid rgba(20, 20, 22, 0.05);
+}
+
+.title {
+  margin: 0 0 18px 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: #111827;
+  text-align: left;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.input {
+  height: 44px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #e6edf3;
+  background: #ffffff;
+  font-size: 14px;
+  color: #111827;
+  outline: none;
+  transition: box-shadow 0.12s ease, border-color 0.12s ease;
+}
+
+.input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37,99,235,0.08);
+}
+
+.actions {
+  margin-top: 6px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.button {
+  background-color: #0f2027;
+  color: #61dafb;
+  padding: 10px 20px;
+  border: 1px solid #61dafb;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.button a{
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+}
+
+.button:hover {
+  background-color: #61dafb;
+  color: #1f1f1f;
+  box-shadow: 0 0 10px #61dafb88;
+}
+
+@media (max-width: 480px) {
+  .card { padding: 20px; border-radius: 8px; }
+  .title { font-size: 20px; }
+}

@@ -71,6 +71,12 @@
   transition: all 0.3s ease;
 }
 
+.button a{
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+}
+
 .button:hover {
   background-color: #61dafb;
   color: #1f1f1f;

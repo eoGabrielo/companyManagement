@@ -1,3 +1,4 @@
+// src/components/ProductList.jsx
 import React, { useState, useEffect } from 'react';
 import styles from './ProductList.module.css';
 
@@ -7,6 +8,8 @@ function ProductList() {
   const [tipo, setTipo] = useState('');
   const [quantidade, setQuantidade] = useState('');
   const [codigo, setCodigo] = useState('');
+
+  const [confirmDelete, setConfirmDelete] = useState(null); // produto que estamos confirmando para deletar
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -19,7 +22,7 @@ function ProductList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterTipo, setFilterTipo] = useState('');
 
-  // Busca a lista de produtos do backend e atualiza o estado
+  // Função para buscar produtos da API
   async function fetchProdutos() {
     setLoadingList(true);
     setListError(null);
@@ -43,16 +46,16 @@ function ProductList() {
     fetchProdutos();
   }, []);
 
-  // Envia novo produto ou atualiza um existente, depois atualiza a lista
+  // Função para criar ou atualizar produto
   async function handleSubmit(e) {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
+    // montar payload — cuidado com campos obrigatórios
     const payload = {
-      // garante que nome, tipo e codigo sejam salvos em maiúsculas
       nome: (nome || '').toUpperCase(),
-      descricao, // descrição livre
+      descricao: descricao,
       tipo: (tipo || '').toUpperCase(),
       quantidade: Number(quantidade) || 0,
       codigo: (codigo || '').toUpperCase(),
@@ -75,12 +78,15 @@ function ProductList() {
       }
 
       if (!res.ok) {
+        // extrair erro do backend
         const err = await res.json().catch(() => ({}));
         throw new Error(err.message || `Erro: ${res.status}`);
       }
 
+      // ao salvar com sucesso, recarrega lista
       await fetchProdutos();
 
+      // limpa campos de formulário
       setNome('');
       setDescricao('');
       setTipo('');
@@ -95,7 +101,7 @@ function ProductList() {
     }
   }
 
-  // Preenche o formulário para editar o produto selecionado (exibe em CAPS onde necessário)
+  // Preparar para editar
   function startEditing(produto) {
     setEditingId(produto._id ?? produto.id);
     setNome((produto.nome ?? '').toString().toUpperCase());
@@ -105,12 +111,24 @@ function ProductList() {
     setCodigo((produto.codigo ?? '').toString().toUpperCase());
   }
 
-  function startDeleteing(produto) {
-    console.log(produto._id || produto.id)
-    //LOGICA DE DELETA PRODUTO AQUI
-  }
+  // Função para deletar
+  const startDelete = async (produto) => {
+    const idItem = produto._id ?? produto.id;
+    try {
+      const res = await fetch(`http://localhost:3000/produtos/${idItem}`, {
+        method: 'DELETE',
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || `Erro ao deletar: ${res.status}`);
+      }
+      // se deletou com sucesso, recarrega lista
+      await fetchProdutos();
+    } catch (err) {
+      console.log("Erro deletar produto:", err);
+    }
+  };
 
-  // Limpa o formulário e cancela a edição
   function cancelEditing() {
     setEditingId(null);
     setNome('');
@@ -120,7 +138,6 @@ function ProductList() {
     setCodigo('');
   }
 
-  // handlers de busca / filtro
   function handleSearchChange(e) {
     setSearchTerm(e.target.value);
   }
@@ -129,14 +146,12 @@ function ProductList() {
     setFilterTipo(e.target.value);
   }
 
-  // tipos únicos disponíveis (para o select de filtro)
   const tiposDisponiveis = Array.from(
-    new Set(lista.map((p) => (p.tipo ?? '').toString().toUpperCase()).filter(Boolean))
+    new Set(lista.map(p => (p.tipo ?? '').toString().toUpperCase()).filter(Boolean))
   );
 
-  // aplica filtro por tipo e busca por nome (case-insensitive)
   const listaFiltrada = lista
-    .filter((p) => {
+    .filter(p => {
       const nomeItem = (p.nome ?? '').toString().toLowerCase();
       const tipoItem = (p.tipo ?? '').toString().toUpperCase();
       const matchesTipo = !filterTipo || filterTipo === '' || tipoItem === filterTipo;
@@ -146,11 +161,41 @@ function ProductList() {
     .sort((a, b) => {
       const qa = Number(a.quantidade ?? a.estoque ?? 0);
       const qb = Number(b.quantidade ?? b.estoque ?? 0);
-      return qa - qb; // menor quantidade primeiro
+      return qa - qb;
     });
 
   return (
     <div className={styles.container}>
+      {/* Popup de confirmação */}
+      {confirmDelete && (
+        <div className={styles.popupOverlay}>
+          <div className={styles.popup}>
+            <p>
+              Tem certeza que deseja excluir o produto{' '}
+              <strong>{confirmDelete.nome}</strong>?
+            </p>
+            <div className={styles.popupButtons}>
+              <button
+                className={styles.popupConfirm}
+                onClick={async () => {
+                  await startDelete(confirmDelete);
+                  setConfirmDelete(null);
+                }}
+              >
+                Sim, excluir
+              </button>
+              <button
+                className={styles.popupCancel}
+                onClick={() => setConfirmDelete(null)}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Formulário de cadastro / edição */}
       <form className={styles.form} onSubmit={handleSubmit} style={{ marginBottom: 16 }}>
         <div className={styles.formInputs}>
           <input
@@ -190,23 +235,31 @@ function ProductList() {
           />
         </div>
 
-        <div style={{ marginTop: 8,}}>
+        <div style={{ marginTop: 8 }}>
           <textarea
             name="descricao"
             placeholder="Descrição"
             value={descricao}
             onChange={(e) => setDescricao(e.target.value)}
             rows={2}
-            style={{ width: '100%', height: 160 }}
+            style={{ width: '100%' }}
           />
         </div>
 
         <div style={{ marginTop: 8, display: 'flex', alignItems: 'center' }}>
           <button type="submit" disabled={loading}>
-            {loading ? 'Salvando...' : editingId ? 'Salvar Alterações' : 'Adicionar Produto'}
+            {loading
+              ? 'Salvando...'
+              : editingId
+              ? 'Salvar Alterações'
+              : 'Adicionar Produto'}
           </button>
           {editingId && (
-            <button type="button" onClick={cancelEditing} style={{ marginLeft: 8, background: '#FF2C2C' }}>
+            <button
+              type="button"
+              onClick={cancelEditing}
+              style={{ marginLeft: 8, background: '#FF2C2C' }}
+            >
               Cancelar
             </button>
           )}
@@ -214,6 +267,7 @@ function ProductList() {
         </div>
       </form>
 
+      {/* Filtros */}
       <div className={styles.filtros}>
         <input
           placeholder="Buscar por nome..."
@@ -221,10 +275,16 @@ function ProductList() {
           onChange={handleSearchChange}
           className={styles.input}
         />
-        <select value={filterTipo} onChange={handleFilterTipo} className={styles.select}>
+        <select
+          value={filterTipo}
+          onChange={handleFilterTipo}
+          className={styles.select}
+        >
           <option value="">Todos os tipos</option>
-          {tiposDisponiveis.map((t) => (
-            <option key={t} value={t}>{t}</option>
+          {tiposDisponiveis.map(t => (
+            <option key={t} value={t}>
+              {t}
+            </option>
           ))}
         </select>
         <button
@@ -239,6 +299,7 @@ function ProductList() {
         </button>
       </div>
 
+      {/* Lista de produtos */}
       <div className={styles.productList}>
         {loadingList ? (
           <div>Carregando produtos...</div>
@@ -247,13 +308,14 @@ function ProductList() {
         ) : listaFiltrada.length === 0 ? (
           <div>Nenhum produto encontrado.</div>
         ) : (
-          listaFiltrada.map((produto) => (
+          listaFiltrada.map(produto => (
             <div
               key={produto._id ?? produto.id ?? produto.codigo ?? produto.nome}
               className={styles.item}
               style={{ position: 'relative' }}
             >
               <div className={styles.imagem}>
+                {/* Se tiver imagem real, usar <img src=... /> */}
                 <h1>IMAGEM</h1>
               </div>
               <div className={styles.descricao}>
@@ -265,7 +327,12 @@ function ProductList() {
                 {(() => {
                   const qty = Number(produto.quantidade ?? produto.estoque ?? 0);
                   return (
-                    <span style={{ color: qty < 5 ? 'orange' : 'green', fontWeight: qty < 5 ? 700 : 400 }}>
+                    <span
+                      style={{
+                        color: qty < 5 ? 'orange' : 'green',
+                        fontWeight: qty < 5 ? 700 : 400,
+                      }}
+                    >
                       {qty} em estoque
                     </span>
                   );
@@ -274,7 +341,7 @@ function ProductList() {
               <div style={{ position: 'absolute', right: 8, bottom: 8 }}>
                 <button
                   type="button"
-                  onClick={() => startDeleteing(produto)}
+                  onClick={() => setConfirmDelete(produto)}
                   className={styles.editButton}
                 >
                   EXCLUIR
@@ -283,7 +350,7 @@ function ProductList() {
                   type="button"
                   onClick={() => startEditing(produto)}
                   className={styles.editButton}
-                  style={{ marginLeft: 8, marginBottom: 8}}
+                  style={{ marginLeft: 8 }}
                 >
                   EDITAR
                 </button>

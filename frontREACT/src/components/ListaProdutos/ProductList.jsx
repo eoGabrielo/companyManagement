@@ -342,15 +342,13 @@ function ProductList() {
               style={{ position: 'relative' }}
             >
               <div className={styles.imagem}>
-                <img
-                  src="https://m.media-amazon.com/images"
-                  alt="Imagem do produto"
-                />
+                <h1>IMAGEM</h1>
               </div>
               <div className={styles.descricao}>
                 <h3>{(produto.nome ?? '').toString()}</h3>
                 <p>{produto.descricao}</p>
-                <p>{(produto.tipo ?? '').toString()}</p>
+                <p style={{color: "#c6c6c63a", fontSize: 12, marginBottom: 0}}>CATEGORIA: {(produto.tipo ?? '').toString()}</p>
+                <p style={{color: "#c6c6c63a", fontSize: 12, marginTop: 0}}>CODIGO: {(produto.codigo ?? '').toString()}</p>
               </div>
               <div className={styles.estoque}>
                 {(() => {

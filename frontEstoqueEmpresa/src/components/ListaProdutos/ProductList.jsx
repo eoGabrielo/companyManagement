@@ -1,55 +1,49 @@
-// src/components/ProductList.jsx
 import React, { useState, useEffect } from 'react';
 import styles from './ProductList.module.css';
 
 function ProductList() {
-  // Cada campo com seu próprio useState
   const [nome, setNome] = useState('');
   const [descricao, setDescricao] = useState('');
   const [tipo, setTipo] = useState('');
   const [quantidade, setQuantidade] = useState('');
   const [codigo, setCodigo] = useState('');
-  
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [lista, setLista] = useState([]); // produtos carregados da API
+  const [lista, setLista] = useState([]);
   const [loadingList, setLoadingList] = useState(false);
   const [listError, setListError] = useState(null);
   const [editingId, setEditingId] = useState(null);
 
-  // Busca os produtos da API quando o componente monta
-  useEffect(() => {
-    let mounted = true;
-    async function fetchProdutos() {
-      setLoadingList(true);
-      setListError(null);
-      try {
-        const res = await fetch('http://localhost:3000/produtos');
-        if (!res.ok) {
-          const body = await res.json().catch(() => ({}));
-          throw new Error(body.message || `Erro: ${res.status}`);
-        }
-        const data = await res.json();
-        if (mounted) setLista(data);
-      } catch (err) {
-        console.error('Erro ao buscar produtos:', err);
-        if (mounted) setListError(err.message || 'Erro ao carregar produtos');
-      } finally {
-        if (mounted) setLoadingList(false);
+  // ⬇️ Mover a função para fora do useEffect para poder reutilizá-la
+  async function fetchProdutos() {
+    setLoadingList(true);
+    setListError(null);
+    try {
+      const res = await fetch('http://localhost:3000/produtos');
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.message || `Erro: ${res.status}`);
       }
+      const data = await res.json();
+      setLista(data);
+    } catch (err) {
+      console.error('Erro ao buscar produtos:', err);
+      setListError(err.message || 'Erro ao carregar produtos');
+    } finally {
+      setLoadingList(false);
     }
+  }
 
+  useEffect(() => {
     fetchProdutos();
-    return () => { mounted = false; };
   }, []);
 
-  // Envia o formulário para a API ou localmente
   async function handleSubmit(e) {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
-    // Monta o payload com cada valor
     const payload = {
       nome,
       descricao,
@@ -57,8 +51,6 @@ function ProductList() {
       quantidade: Number(quantidade) || 0,
       codigo
     };
-
-    console.log('Payload pronto para enviar:', payload);
 
     try {
       let res;
@@ -78,18 +70,13 @@ function ProductList() {
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        console.log(err);
         throw new Error(err.message || `Erro: ${res.status}`);
       }
 
-      const result = await res.json();
-      if (editingId) {
-        setLista(prev => prev.map(p => (p._id === result._id || p.id === result.id ? result : p)));
-      } else {
-        setLista(prev => [result, ...prev]);
-      }
+      // Atualiza a lista inteira após salvar
+      await fetchProdutos();
 
-      // limpa campos e modo edição
+      // Limpa o formulário
       setNome('');
       setDescricao('');
       setTipo('');
@@ -109,7 +96,7 @@ function ProductList() {
     setNome(produto.nome ?? '');
     setDescricao(produto.descricao ?? '');
     setTipo(produto.tipo ?? '');
-    setQuantidade(String(produto.quantidade ?? produto.estoque ?? ''));
+    setQuantidade(Number(produto.quantidade ?? produto.estoque ?? 0));
     setCodigo(produto.codigo ?? '');
   }
 
@@ -124,12 +111,8 @@ function ProductList() {
 
   return (
     <div className={styles.container}>
-
-      {/* Formulário de criação */}
       <form className={styles.form} onSubmit={handleSubmit} style={{ marginBottom: 16 }}>
         <div className={styles.formInputs}>
-
-          {/* Nome do produto */}
           <input
             name="nome"
             placeholder="Nome"
@@ -138,8 +121,6 @@ function ProductList() {
             required
             style={{ flex: '1 1 200px' }}
           />
-
-          {/* Tipo do produto */}
           <select
             name="tipo"
             value={tipo}
@@ -151,8 +132,6 @@ function ProductList() {
             <option value="PLACA">PLACA</option>
             <option value="MATERIAL">MATERIAL</option>
           </select>
-
-          {/* Código do produto */}
           <input
             name="codigo"
             placeholder="Código"
@@ -160,8 +139,6 @@ function ProductList() {
             onChange={(e) => setCodigo(e.target.value)}
             style={{ flex: '1 1 120px' }}
           />
-
-          {/* Quantidade */}
           <input
             name="quantidade"
             type="number"
@@ -173,7 +150,6 @@ function ProductList() {
           />
         </div>
 
-        {/* Descrição */}
         <div style={{ marginTop: 8 }}>
           <textarea
             name="descricao"
@@ -185,21 +161,19 @@ function ProductList() {
           />
         </div>
 
-        {/* Botão de submit e exibição de erro */}
         <div style={{ marginTop: 8 }}>
-            <button type="submit" disabled={loading}>
-              {loading ? 'Salvando...' : editingId ? 'Salvar Alterações' : 'Adicionar Produto'}
+          <button type="submit" disabled={loading}>
+            {loading ? 'Salvando...' : editingId ? 'Salvar Alterações' : 'Adicionar Produto'}
           </button>
-            {editingId && (
-              <button type="button" onClick={cancelEditing} style={{ marginLeft: 8 }}>
-                Cancelar
-              </button>
-            )}
+          {editingId && (
+            <button type="button" onClick={cancelEditing} style={{ marginLeft: 8 }}>
+              Cancelar
+            </button>
+          )}
           {error && <span style={{ color: 'red', marginLeft: 8 }}>{error}</span>}
         </div>
       </form>
 
-      {/* Lista de produtos (vinda da API) */}
       <div className={styles.productList}>
         {loadingList ? (
           <div>Carregando produtos...</div>
@@ -209,9 +183,13 @@ function ProductList() {
           <div>Nenhum produto encontrado.</div>
         ) : (
           lista.map(produto => (
-            <div key={produto._id || produto.id} className={styles.item} style={{ position: 'relative' }}>
+            <div
+              key={produto._id ?? produto.id ?? produto.codigo ?? produto.nome}
+              className={styles.item}
+              style={{ position: 'relative' }}
+            >
               <div className={styles.imagem}>
-                <img src={produto.imagem || 'https://via.placeholder.com/150'} alt={produto.nome} />
+                <h1>IMAGEM</h1>
               </div>
               <div className={styles.descricao}>
                 <h3>{produto.nome}</h3>

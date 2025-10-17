@@ -6,7 +6,7 @@ export const verifyToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
-    return res.status(401).json({ message: "Token não fornecido" });
+    return res.status(401).json({ message: "Usuário não foi autenticado." });
   }
 
   const token = authHeader.split(" ")[1];
@@ -19,4 +19,3 @@ export const verifyToken = (req, res, next) => {
     return res.status(401).json({ message: "Token inválido" });
   }
 };
-

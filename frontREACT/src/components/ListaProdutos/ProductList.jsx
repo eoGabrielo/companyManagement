@@ -47,10 +47,17 @@ function ProductList() {
   }, []);
 
   // Função para criar ou atualizar produto
-  async function handleSubmit(e) {
+  async function handleSubmit(e, skipValidation = false) {
     e.preventDefault();
     setError(null);
     setLoading(true);
+
+    // Validação dos campos apenas quando não estiver pulando a validação
+    if (!skipValidation && !nome) {
+      setError('Todos os campos são obrigatórios');
+      setLoading(false);
+      return;
+    }
 
     // montar payload — cuidado com campos obrigatórios
     const payload = {
@@ -66,13 +73,19 @@ function ProductList() {
       if (editingId) {
         res = await fetch(`http://localhost:3000/produtos/${editingId}`, {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
           body: JSON.stringify(payload),
         });
       } else {
         res = await fetch('http://localhost:3000/produtos', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
           body: JSON.stringify(payload),
         });
       }
@@ -113,28 +126,28 @@ function ProductList() {
 
   // Função para deletar
   const startDelete = async (produto) => {
-  const idItem = produto._id ?? produto.id;
+    const idItem = produto._id ?? produto.id;
 
-  try {
-    const res = await fetch(`http://localhost:3000/produtos/${idItem}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`,
-      },
-    });
+    try {
+      const res = await fetch(`http://localhost:3000/produtos/${idItem}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || `Erro ao deletar: ${res.status}`);
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || `Erro ao deletar: ${res.status}`);
+      }
+
+      // Produto deletado com sucesso, recarrega a lista
+      await fetchProdutos();
+    } catch (err) {
+      console.error("Erro ao deletar produto:", err.message);
     }
-
-    // Produto deletado com sucesso, recarrega a lista
-    await fetchProdutos();
-  } catch (err) {
-    console.error("Erro ao deletar produto:", err.message);
-  }
-};
+  };
 
 
   function cancelEditing() {
@@ -221,9 +234,15 @@ function ProductList() {
             style={{ flex: '1 1 150px' }}
           >
             <option value="">Selecione o tipo</option>
-            <option value="TI">TI</option>
-            <option value="PLACA">PLACA</option>
-            <option value="MATERIAL">MATERIAL</option>
+            <option value="FONTES">FONTES</option>
+            <option value="CENTRAL">CENTRAL</option>
+            <option value="SENSOR">SENSOR</option>
+            <option value="BOTOEIRA">BOTOEIRA</option>
+            <option value="CONTROLE DE ACESSO">CONTROLE DE ACESSO</option>
+            <option value="SEM PARAR">SEM PARAR</option>
+            <option value="ACESSORIOS">ACESSORIOS</option>
+            <option value="MOTOR">MOTOR</option>
+            <option value="CABOS">CABOS</option>
           </select>
           <input
             name="codigo"
@@ -324,7 +343,7 @@ function ProductList() {
             >
               <div className={styles.imagem}>
                 <img
-                  src="https://m.media-amazon.com/images/I/513IBnFxdlL._AC_SL1000_.jpg"
+                  src="https://m.media-amazon.com/images"
                   alt="Imagem do produto"
                 />
               </div>
@@ -348,21 +367,64 @@ function ProductList() {
                   );
                 })()}
               </div>
-              <div style={{ position: 'absolute', right: 8, bottom: 8 }}>
-                <button
-                  type="button"
-                  onClick={() => setConfirmDelete(produto)}
-                  className={styles.editButton}
-                >
-                  EXCLUIR
-                </button>
+              <div style={{ position: 'absolute', right: 8, bottom: 8, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                {/* Quantity adjustment buttons */}
+                <div style={{ display: 'flex', gap: '4px', marginRight: '8px' }}>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const newQty = Number(produto.quantidade ?? produto.estoque ?? 0) - 1;
+                      if (newQty >= 0) {
+                        await fetch(`http://localhost:3000/produtos/${produto._id}`, {
+                          method: 'PUT',
+                          headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                          },
+                          body: JSON.stringify({ ...produto, quantidade: newQty }),
+                        });
+                        fetchProdutos();
+                      }
+                    }}
+                    className={styles.actionButton}
+                  >
+                    ↓
+                  </button>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const newQty = Number(produto.quantidade ?? produto.estoque ?? 0) + 1;
+                      await fetch(`http://localhost:3000/produtos/${produto._id}`, {
+                        method: 'PUT',
+                        headers: {
+                          'Content-Type': 'application/json',
+                          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                        },
+                        body: JSON.stringify({ ...produto, quantidade: newQty }),
+                      });
+                      fetchProdutos();
+                    }}
+                    className={styles.actionButton}
+                  >
+                    ↑
+                  </button>
+                </div>
+
+                {/* Edit and Delete buttons */}
                 <button
                   type="button"
                   onClick={() => startEditing(produto)}
-                  className={styles.editButton}
-                  style={{ marginLeft: 8 }}
+                  className={styles.actionButton}
                 >
-                  EDITAR
+                  Editar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmDelete(produto)}
+                  className={styles.actionButton}
+                  style={{ background: '#FF2C2C' }}
+                >
+                  Excluir
                 </button>
               </div>
             </div>

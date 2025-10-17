@@ -13,8 +13,8 @@ const router = Router();
 
 router.get("/", getProdutos);
 router.get("/:id", getProdutoById);
-router.post("/", createProduto);
-router.put("/:id", updateProduto);
+router.post("/",verifyToken, createProduto);
+router.put("/:id",verifyToken, updateProduto);
 router.delete("/:id", verifyToken, deleteProduto);
 
 export default router;

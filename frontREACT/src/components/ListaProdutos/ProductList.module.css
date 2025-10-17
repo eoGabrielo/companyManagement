@@ -299,3 +299,31 @@
   font-weight: bold;
   cursor: pointer;
 }
+
+.quantityButton {
+  padding: 4px 8px;
+  font-size: 16px;
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.quantityButton:hover {
+  background: #e0e0e0;
+}
+
+.actionButton {
+  width: 100%;
+  padding: 10px 12px;
+  background: linear-gradient(90deg, #61dafb, #21a1f1);
+  color: #0b1220;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.actionButton:hover {
+  opacity: 0.8;
+}

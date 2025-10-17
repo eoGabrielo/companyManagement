@@ -11,6 +11,8 @@
 }
 
 .item {
+  margin: 0 auto;
+  max-width: 1024px;
   display: flex;
   background-color: #1f2937;
   color: #e0e0e0;
@@ -153,6 +155,7 @@
 
 /* Botão de edição usado dentro dos cards */
 .editButton {
+  margin: 0 46px 16px 0;
   padding: 8px 12px;
   background: linear-gradient(90deg, #61dafb, #21a1f1);
   color: #0b1220;
@@ -165,4 +168,82 @@
 .editButton:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.editButton:hover {
+  background: linear-gradient(90deg, rgba(33, 161, 241, 0.76), #61fbe1);
+}
+
+.filtros {
+  margin: 0 auto;
+  max-width: 1024px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+  background-color: rgba(31, 41, 55, 0.6);
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(32, 58, 67, 0.6);
+}
+
+.input {
+  flex: 1 1 300px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background-color: #0b1220;
+  border: 1px solid rgba(97, 218, 251, 0.08);
+  color: #e0e0e0;
+  font-size: 16px;
+  outline: none;
+}
+
+.input:focus {
+  border-color: rgba(97, 218, 251, 0.6);
+  box-shadow: 0 4px 12px rgba(97, 218, 251, 0.12);
+}
+
+.select {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background-color: #0b1220;
+  border: 1px solid rgba(97, 218, 251, 0.08);
+  color: #e0e0e0;
+  font-size: 16px;
+  outline: none;
+}
+
+.select:focus {
+  border-color: rgba(97, 218, 251, 0.6);
+  box-shadow: 0 4px 12px rgba(97, 218, 251, 0.12);
+}
+
+.limparButton {
+  padding: 8px 16px;
+  background: linear-gradient(90deg, rgba(12, 198, 250, 0.863));
+  color: #0b1220;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.limparButton:hover {
+  transform: scale(1.05);
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .filtros {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .input,
+  .select,
+  .limparButton {
+    width: 100%;
+  }
 }

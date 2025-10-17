@@ -32,12 +32,12 @@
 }
 
 .imagem img {
-  width: 150px;
-  height: 150px;
+  max-width: 200px;
   border-radius: 12px;
-  object-fit: cover;
+  object-fit: contain;
   box-shadow: 0 4px 10px rgba(97, 218, 251, 0.3);
   flex-shrink: 0;
+  background-color: #0b1220; 
 }
 
 .descricao {

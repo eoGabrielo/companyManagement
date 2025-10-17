@@ -251,8 +251,8 @@ function ProductList() {
             {loading
               ? 'Salvando...'
               : editingId
-              ? 'Salvar Alterações'
-              : 'Adicionar Produto'}
+                ? 'Salvar Alterações'
+                : 'Adicionar Produto'}
           </button>
           {editingId && (
             <button
@@ -315,8 +315,10 @@ function ProductList() {
               style={{ position: 'relative' }}
             >
               <div className={styles.imagem}>
-                {/* Se tiver imagem real, usar <img src=... /> */}
-                <h1>IMAGEM</h1>
+                <img
+                  src="https://m.media-amazon.com/images/I/513IBnFxdlL._AC_SL1000_.jpg"
+                  alt="Imagem do produto"
+                />
               </div>
               <div className={styles.descricao}>
                 <h3>{(produto.nome ?? '').toString()}</h3>

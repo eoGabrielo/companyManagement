@@ -5,10 +5,11 @@ function Home() {
   return (
     <main className={styles.container}>
       <section className={styles.card}>
-        <h1 className={styles.title}>Bem-vindo ao Sistema de Cadastro de Produtos</h1>
+        <h1 className={styles.title}>Bem-vindo ao Sistema de Estoque da Rocken</h1>
         <p className={styles.description}>
-          Aqui você pode gerenciar seu estoque com facilidade, cadastrar novos produtos,
-          acompanhar quantidades disponíveis e manter seu negócio sempre organizado.
+          Este sistema é responsável por organizar e gerenciar o estoque da Rocken.
+          Aqui você pode cadastrar produtos, acompanhar quantidades disponíveis e manter tudo sob controle.
+          Use com responsabilidade.
         </p>
         <div className={styles.decorations}>
           <span className={styles.dot} style={{ '--i': 1 }}></span>

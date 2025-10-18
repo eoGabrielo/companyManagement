@@ -38,6 +38,8 @@ export default function Login() {
         // Salvando o token no localStorage
         if (data.token) {
           localStorage.setItem('token', data.token);
+          // Dispara evento para notificar outras partes da app no mesmo tab
+          window.dispatchEvent(new Event('authChanged'));
         }
 
         // Mostrar mensagem de sucesso e redirecionar para /estoque

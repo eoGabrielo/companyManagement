@@ -1,4 +1,4 @@
-// src/components/Home.jsx
+// página inicial
 import styles from './Home.module.css';
 
 function Home() {

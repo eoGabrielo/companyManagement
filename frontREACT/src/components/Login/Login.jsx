@@ -12,14 +12,12 @@ export default function Login() {
   const location = useLocation();
 
   useEffect(() => {
-    // If navigated here with a state message (e.g. from ProtectedRoute), show it
-    if (location.state && location.state.message) {
-      setMessage(location.state.message);
-    }
+    // mostra mensagem passada pela rota
+    if (location.state && location.state.message) setMessage(location.state.message);
   }, [location.state]);
 
   const handleLogin = async (e) => {
-    e.preventDefault(); // evita o recarregamento da página
+  e.preventDefault(); // impede reload
     setLoading(true);
     setMessage(null);
 
@@ -35,20 +33,15 @@ export default function Login() {
       if (res.ok) {
         const data = await res.json();
 
-        // Salvando o token no localStorage
+        // salva token e notifica app
         if (data.token) {
           localStorage.setItem('token', data.token);
-          // Dispara evento para notificar outras partes da app no mesmo tab
           window.dispatchEvent(new Event('authChanged'));
         }
 
-        // Mostrar mensagem de sucesso e redirecionar para /estoque
+        // mostra sucesso e redireciona
         setMessage('Login bem-sucedido! Redirecionando para o estoque...');
-
-        // curto delay para o usuário ver a mensagem
-        setTimeout(() => {
-          navigate('/estoque');
-        }, 1200);
+        setTimeout(() => navigate('/estoque'), 1200);
       } else {
         const error = await res.text();
         setMessage('Erro ao fazer login: ' + (error || res.statusText));

@@ -7,7 +7,7 @@ import {
   deleteProduto,
 } from "../controllers/produtoController.js";
 
-import { verifyToken } from "../middleware/authMiddleware.js"//DESABILITADO PARA CONSEGUIR FAZER TESTES UNITARIOS COM "JEST"
+import { verifyToken } from "../middleware/authMiddleware.js"
 
 const router = Router();
 

@@ -8,16 +8,12 @@ function Header() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // atualiza estado de autenticação
     setIsLogged(Boolean(localStorage.getItem('token')));
-
-    // also listen to storage events in case another tab logs out/logs in
     const handleStorage = () => setIsLogged(Boolean(localStorage.getItem('token')));
     const handleAuthChanged = () => setIsLogged(Boolean(localStorage.getItem('token')));
-
     window.addEventListener('storage', handleStorage);
-    // listen to custom event for same-tab updates
     window.addEventListener('authChanged', handleAuthChanged);
-
     return () => {
       window.removeEventListener('storage', handleStorage);
       window.removeEventListener('authChanged', handleAuthChanged);

@@ -1,4 +1,4 @@
-// src/components/ProductList.jsx
+// lista e CRUD de produtos
 import React, { useState, useEffect } from 'react';
 import styles from './ProductList.module.css';
 
@@ -9,7 +9,7 @@ function ProductList() {
   const [quantidade, setQuantidade] = useState('');
   const [codigo, setCodigo] = useState('');
 
-  const [confirmDelete, setConfirmDelete] = useState(null); // produto que estamos confirmando para deletar
+  const [confirmDelete, setConfirmDelete] = useState(null); // produto para confirmação de exclusão
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -18,11 +18,11 @@ function ProductList() {
   const [listError, setListError] = useState(null);
   const [editingId, setEditingId] = useState(null);
 
-  // estados para busca / filtro
+  // estados de busca e filtro
   const [searchTerm, setSearchTerm] = useState('');
   const [filterTipo, setFilterTipo] = useState('');
 
-  // Função para buscar produtos da API
+  // busca produtos da API
   async function fetchProdutos() {
     setLoadingList(true);
     setListError(null);
@@ -46,20 +46,20 @@ function ProductList() {
     fetchProdutos();
   }, []);
 
-  // Função para criar ou atualizar produto
+  // cria ou atualiza produto
   async function handleSubmit(e, skipValidation = false) {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
-    // Validação dos campos apenas quando não estiver pulando a validação
+  // valida campos
     if (!skipValidation && !nome) {
       setError('Todos os campos são obrigatórios');
       setLoading(false);
       return;
     }
 
-    // montar payload — cuidado com campos obrigatórios
+  // monta payload
     const payload = {
       nome: (nome || '').toUpperCase(),
       descricao: descricao,
@@ -91,15 +91,15 @@ function ProductList() {
       }
 
       if (!res.ok) {
-        // extrair erro do backend
+        // extrai erro do backend
         const err = await res.json().catch(() => ({}));
         throw new Error(err.message || `Erro: ${res.status}`);
       }
 
-      // ao salvar com sucesso, recarrega lista
+      // recarrega lista após salvar
       await fetchProdutos();
 
-      // limpa campos de formulário
+  // limpa formulário
       setNome('');
       setDescricao('');
       setTipo('');
@@ -114,7 +114,7 @@ function ProductList() {
     }
   }
 
-  // Preparar para editar
+  // prepara edição
   function startEditing(produto) {
     setEditingId(produto._id ?? produto.id);
     setNome((produto.nome ?? '').toString().toUpperCase());
@@ -124,7 +124,7 @@ function ProductList() {
     setCodigo((produto.codigo ?? '').toString().toUpperCase());
   }
 
-  // Função para deletar
+  // deleta produto
   const startDelete = async (produto) => {
     const idItem = produto._id ?? produto.id;
 
@@ -142,7 +142,7 @@ function ProductList() {
         throw new Error(err.message || `Erro ao deletar: ${res.status}`);
       }
 
-      // Produto deletado com sucesso, recarrega a lista
+      // recarrega lista após exclusão
       await fetchProdutos();
     } catch (err) {
       console.error("Erro ao deletar produto:", err.message);
@@ -187,7 +187,7 @@ function ProductList() {
 
   return (
     <div className={styles.container}>
-      {/* Popup de confirmação */}
+        {/* popup de confirmação */}
       {confirmDelete && (
         <div className={styles.popupOverlay}>
           <div className={styles.popup}>
@@ -216,7 +216,7 @@ function ProductList() {
         </div>
       )}
 
-      {/* Formulário de cadastro / edição */}
+  {/* formulário de cadastro/edição */}
       <form className={styles.form} onSubmit={handleSubmit} style={{ marginBottom: 16 }}>
         <div className={styles.formInputs}>
           <input
@@ -294,7 +294,7 @@ function ProductList() {
         </div>
       </form>
 
-      {/* Filtros */}
+  {/* filtros */}
       <div className={styles.filtros}>
         <input
           placeholder="Buscar por nome..."
@@ -326,7 +326,7 @@ function ProductList() {
         </button>
       </div>
 
-      {/* Lista de produtos */}
+  {/* lista de produtos */}
       <div className={styles.productList}>
         {loadingList ? (
           <div>Carregando produtos...</div>
@@ -366,7 +366,7 @@ function ProductList() {
                 })()}
               </div>
               <div style={{ position: 'absolute', right: 8, bottom: 8, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                {/* Quantity adjustment buttons */}
+                {/* botões de ajuste de quantidade */}
                 <div style={{ display: 'flex', gap: '4px', marginRight: '8px' }}>
                   <button
                     type="button"
@@ -408,7 +408,7 @@ function ProductList() {
                   </button>
                 </div>
 
-                {/* Edit and Delete buttons */}
+                {/* editar e excluir */}
                 <button
                   type="button"
                   onClick={() => startEditing(produto)}

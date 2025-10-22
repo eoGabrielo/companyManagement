@@ -174,9 +174,11 @@ function ProductList() {
   const listaFiltrada = lista
     .filter(p => {
       const nomeItem = (p.nome ?? '').toString().toLowerCase();
+      const codigoItem = (p.codigo ?? '').toString().toLowerCase();
       const tipoItem = (p.tipo ?? '').toString().toUpperCase();
       const matchesTipo = !filterTipo || filterTipo === '' || tipoItem === filterTipo;
-      const matchesSearch = !searchTerm || nomeItem.includes(searchTerm.toLowerCase());
+      const q = (searchTerm || '').toString().trim().toLowerCase();
+      const matchesSearch = !q || nomeItem.includes(q) || codigoItem.includes(q);
       return matchesTipo && matchesSearch;
     })
     .sort((a, b) => {
@@ -298,7 +300,7 @@ function ProductList() {
   {/* filtros */}
       <div className={styles.filtros}>
         <input
-          placeholder="Buscar por nome..."
+          placeholder="Buscar por nome ou código..."
           value={searchTerm}
           onChange={handleSearchChange}
           className={styles.input}

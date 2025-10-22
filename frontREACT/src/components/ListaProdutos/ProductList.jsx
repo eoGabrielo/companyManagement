@@ -27,7 +27,7 @@ function ProductList() {
     setLoadingList(true);
     setListError(null);
     try {
-      const res = await fetch('http://localhost:3000/produtos');
+      const res = await fetch('https://companymanagement-omef.onrender.com/produtos');
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         throw new Error(body.message || `Erro: ${res.status}`);
@@ -71,7 +71,7 @@ function ProductList() {
     try {
       let res;
       if (editingId) {
-        res = await fetch(`http://localhost:3000/produtos/${editingId}`, {
+        res = await fetch(`https://companymanagement-omef.onrender.com/produtos/${editingId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -80,7 +80,7 @@ function ProductList() {
           body: JSON.stringify(payload),
         });
       } else {
-        res = await fetch('http://localhost:3000/produtos', {
+        res = await fetch('https://companymanagement-omef.onrender.com/produtos', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -129,7 +129,7 @@ function ProductList() {
     const idItem = produto._id ?? produto.id;
 
     try {
-      const res = await fetch(`http://localhost:3000/produtos/${idItem}`, {
+      const res = await fetch(`https://companymanagement-omef.onrender.com/produtos/${idItem}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -392,7 +392,7 @@ function ProductList() {
                     type="button"
                     onClick={async () => {
                       const newQty = Number(produto.quantidade ?? produto.estoque ?? 0) + 1;
-                      await fetch(`http://localhost:3000/produtos/${produto._id}`, {
+                      await fetch(`https://companymanagement-omef.onrender.com/produtos/${produto._id}`, {
                         method: 'PUT',
                         headers: {
                           'Content-Type': 'application/json',

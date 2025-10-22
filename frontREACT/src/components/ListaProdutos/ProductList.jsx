@@ -217,7 +217,8 @@ function ProductList() {
       )}
 
   {/* formulário de cadastro/edição */}
-      <form className={styles.form} onSubmit={handleSubmit} style={{ marginBottom: 16 }}>
+  <h1 id='topForm' style={{color: '#0f2027'}}>.</h1>
+      <form id='topForm' className={styles.form} onSubmit={handleSubmit} style={{ marginBottom: 16 }}>
         <div className={styles.formInputs}>
           <input
             name="nome"
@@ -365,7 +366,7 @@ function ProductList() {
                   );
                 })()}
               </div>
-              <div style={{ position: 'absolute', right: 8, bottom: 8, display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ position: 'absolute', right: 8, bottom: 8, display: 'flex', alignItems: 'center', gap: '8px', }}>
                 {/* botões de ajuste de quantidade */}
                 <div style={{ display: 'flex', gap: '4px', marginRight: '8px' }}>
                   <button
@@ -414,7 +415,7 @@ function ProductList() {
                   onClick={() => startEditing(produto)}
                   className={styles.actionButton}
                 >
-                  Editar
+                  <a href='#topForm' style={{textDecoration: 'none', color: 'inherit'}}>Editar</a>
                 </button>
                 <button
                   type="button"
